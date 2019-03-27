@@ -1,13 +1,16 @@
 #!/bin/bash
 case "$1" in
 	"help")
-		echo "mongodb start|stop|status"
+		echo "mongodb startWithAuth|startWithoutAuth|stop|status"
 		;;
 	"mongodb")
 		case "$2" in
-			"start")
+			"startWithAuth")
 				echo "mongodb start."
-				/home/gl/software/mongodb-linux-x86_64-ubuntu1604-4.0.5/bin/mongod --dbpath /home/gl/dbData/ >> /home/gl/log/db/log.txt 2>&1 &
+				/home/gl/software/mongodb-linux-x86_64-ubuntu1604-4.0.5/bin/mongod --dbpath /home/gl/dbData/ --auth > /home/gl/log/db/logWithAuth.txt 2>&1 &
+				;;
+			"startWithoutAuth")
+				/home/gl/software/mongodb-linux-x86_64-ubuntu1604-4.0.5/bin/mongod --dbpath /home/gl/dbData/ > /home/gl/log/db/logWithoutAuth.txt 2>&1 &
 				;;
 			"stop")
 				echo "mongodb stop."
