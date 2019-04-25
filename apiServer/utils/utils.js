@@ -11,3 +11,11 @@ exports.generateUserId = function () {
     }
     return randomNum;
 };
+
+exports.checkPassword = function (src, dst) {
+    if(src === dst) {
+        return true;
+    } else {
+        return false;
+    }
+};

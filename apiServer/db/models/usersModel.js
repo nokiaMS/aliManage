@@ -8,6 +8,9 @@ const usersSchema = mongoose.Schema({
             required: true,
             unique: true
         },
+        password: {
+            type: String,
+        },
         tmpId: {
             type: String,
             unique: true,
@@ -59,7 +62,7 @@ const usersSchema = mongoose.Schema({
         },
         status: {
             type: String,
-            default: 'active'
+            default: 'inactive'
         }
     }
 );
