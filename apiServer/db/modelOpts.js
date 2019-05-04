@@ -6,6 +6,7 @@ let DB_PATH = 'mongodb://127.0.0.1:27017/apiServer';
 
 let systemSchema;
 let userInfo;
+let userModel;
 
 let db = mongoose.createConnection(DB_PATH, {
     useNewUrlParser: true
@@ -16,7 +17,70 @@ db.on('connected', (err) => {
     console.log('api server db is connected.');
     systemSchema = require('./models/systemModel');
     userInfo = require('./models/usersModel');
+    userModel = require('./models/userModel');
 });
+
+/* Save user information to db. */
+exports.saveUserSync = function (userInst) {
+    return new Promise( function(resolve, reject) {
+        userModel.model.create(userInst, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "saveUserSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "saveUserSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Get user info by phone num. */
+exports.getUserByPhoneSync = async function (phone) {
+    return new Promise( function(resolve, reject) {
+        userModel.model.find({mobilePhone: phone}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getUserByPhoneSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getUserByPhoneSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Get user info by nick name. */
+exports.getUserByNameSync = async function (name) {
+    return new Promise( function(resolve, reject) {
+        userModel.model.find({nickName: name}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getUserByPhoneSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getUserByPhoneSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Update user information to db. */
+exports.updateUserByNameSync = function (name, jsonStr) {
+    return new Promise( function(resolve, reject) {
+        userModel.model.findOneAndUpdate({nickName: name},{$set: jsonStr}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "updateUserByNameSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "updateUserByNameSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+//=============================================================================================================
 
 /* Get user info by id. */
 exports.getUserInfoSync = async function (uid) {
