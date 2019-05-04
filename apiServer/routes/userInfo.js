@@ -236,6 +236,7 @@ router.post('/login', async function (req, res) {
             } else {
                 let cliRet = returnInfo.ret_user_error(msgId, userInfo, returnInfo.TYPEID_USER_WRONG_PASSWORD, returnInfo.DETAIL_USER_WRONG_PASSWORD);
                 res.send(cliRet);
+                res.add
             }
         }
     } catch (e) {
