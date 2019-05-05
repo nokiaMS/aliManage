@@ -13,6 +13,7 @@ var userInfoRouter = require('./routes/userInfo');
 *     userRouter: 用戶操作相关router.
 * */
 var userRouter = require('./routes/user');
+var smsRouter = require('./routes/verification');
 
 var app = express();
 
@@ -29,7 +30,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/userInfo', userInfoRouter);
-app.use('/user',userRouter);
+app.use('/user', userRouter);
+app.use('/verification', smsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -7,6 +7,7 @@ let DB_PATH = 'mongodb://127.0.0.1:27017/apiServer';
 let systemSchema;
 let userInfo;
 let userModel;
+let smsModel;
 
 let db = mongoose.createConnection(DB_PATH, {
     useNewUrlParser: true
@@ -18,6 +19,7 @@ db.on('connected', (err) => {
     systemSchema = require('./models/systemModel');
     userInfo = require('./models/usersModel');
     userModel = require('./models/userModel');
+    smsModel = require('./models/smsModel');
 });
 
 /* Save user information to db. */
@@ -74,6 +76,36 @@ exports.updateUserByNameSync = function (name, jsonStr) {
                 resolve(result);
             } else {
                 console.log(LOG_PREFIX + "updateUserByNameSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Update SMS. */
+exports.updateSMS = function (phone, verCode) {
+    return new Promise( function(resolve, reject) {
+        smsModel.model.findOneAndUpdate({mobilePhone: phone},{$set: {code: verCode}},{upsert: true}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "updateSMS" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "updateSMS" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Get SMS code by phone. */
+exports.getSMSByPhoneSync = async function (phone) {
+    return new Promise( function(resolve, reject) {
+        userModel.model.find({mobilePhone: phone}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getSMSByPhoneSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getSMSByPhoneSync" + err);
                 reject(err);
             }
         });
