@@ -44,6 +44,26 @@ const usersSchema = mongoose.Schema({
         type: String,
         default: ""
     },
+    asset1: {
+        type: Number,
+        default: 0
+    },
+    asset2: {
+        type: Number,
+        default: 0
+    },
+    asset3: {
+        type: Number,
+        default: 0
+    },
+    asset4: {
+        type: Number,
+        default: 0
+    },
+    asset5: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
         default: 'inactive'
