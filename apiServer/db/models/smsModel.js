@@ -9,6 +9,9 @@ const smsSchema = mongoose.Schema({
     },
     code: {
         type: String
+    },
+    type: {
+        type: String
     }
 });
 

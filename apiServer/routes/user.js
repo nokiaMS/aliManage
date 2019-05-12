@@ -2,9 +2,95 @@ var express = require('express');
 var router = express.Router();
 let modelOpts = require('../db/modelOpts');
 
+router.post('/info/password',  async function (req, res) {
+    //1. 获得用户传递的参数.
+    let uid = req.body.uid;
+    let name = req.body.nickName;
+    let password = req.body.password;
+    let code = req.body.code;
+
+    let ret;
+
+    try {
+        //2. 检查参数有效性,参数无效抛出异常.
+
+        //3. 返回用户基本信息.
+        let userInDB = await modelOpts.getUserByNameSync(name);
+        if(userInDB.length === 0) {     //用户不存在,返回空给客户端.
+            ret = {
+                uid: uid,
+                status: "false",
+                errCode: "0x20013"             //用户不存在.
+            }
+        } else {
+            await modelOpts.updateUserByNameSync(userInDB[0].nickName, {password: password});
+            ret = {
+                uid: uid,
+                status: "true",
+                errCode: "0x10000"  //成功.
+            }
+        }
+        res.header("Access-Control-Allow-Origin", "*");     //添加跨域标识.
+        res.send(ret);
+    } catch(e) {
+        console.log("Error happened,");
+        console.log(e);
+    }
+});
+
+/*
+guoxu@ubuntu:~/software/WebStorm-182.3911.37/bin$ curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/user/info/phone' --data '{"uid":"0x2244","oldPhone":"13499884758","newPhone":"90876543212","code":"213456"}'
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 52
+ETag: W/"34-p3wZcUTO2HT5argQ6o7I/sJX3ZQ"
+Date: Sat, 11 May 2019 11:45:58 GMT
+Connection: keep-alive
+
+{"uid":"0x2244","status":"true","errCode":"0x10000"}
+guoxu@ubuntu:~/software/WebStorm-182.3911.37/bin$
+*/
+router.post('/info/phone',  async function (req, res) {
+    //1. 获得用户传递的参数.
+    let uid = req.body.uid;
+    let oldPhone = req.body.oldPhone;
+    let newPhone = req.body.newPhone;
+    let code = req.body.code;
+
+    let ret;
+
+    try {
+        //2. 检查参数有效性,参数无效抛出异常.
+
+        //3. 返回用户基本信息.
+        let userInDB = await modelOpts.getUserByPhoneSync(oldPhone);
+        if(userInDB.length === 0) {     //用户不存在,返回空给客户端.
+            ret = {
+                uid: uid,
+                status: "false",
+                errCode: "0x20013"             //用户不存在.
+            }
+        } else {
+            await modelOpts.updateUserByNameSync(userInDB[0].nickName, {mobilePhone: newPhone});
+            ret = {
+                uid: uid,
+                status: "true",
+                errCode: "0x10000"  //成功.
+            }
+        }
+        res.header("Access-Control-Allow-Origin", "*");     //添加跨域标识.
+        res.send(ret);
+    } catch(e) {
+        console.log("Error happened,");
+        console.log(e);
+    }
+});
+
 /*
 *
-guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST.0.1:3000/user/partner/unbind' --data '{"uid":"0x2244","nickName":"Jerraba"}'
+guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/user/partner/unbind' --data '{"uid":"0x2244","nickName":"Jerraba"}'
 HTTP/1.1 200 OK
 X-Powered-By: Express
 Access-Control-Allow-Origin: *
@@ -52,7 +138,7 @@ router.post('/partner/unbind',  async function (req, res) {
 
 /*
 *
-guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST -H 'Content-Type: application/json' .0.1:3000/user/partner/bind' --data '{"uid":"0x2244","nickName":"Jerraba","partner": "13499884758"}'
+guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/user/partner/bind' --data '{"uid":"0x2244","nickName":"Jerraba","partner": "13499884758"}'
 HTTP/1.1 200 OK
 X-Powered-By: Express
 Access-Control-Allow-Origin: *

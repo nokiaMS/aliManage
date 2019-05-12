@@ -29,9 +29,36 @@ router.post('/sms', async function(req, res) {
         //3.生成验证码并存储数据库.
         let randomNum = stringRandom(8, '123456789'); //生成8位随机数字.
         //4.存储电话和数字到数据库.
-        await modelOpts.updateSMS(phone, randomNum);
+        await modelOpts.updateSMS(phone, randomNum, 'sms');
         //5.调用短信接口发送短信.
         await utils.sendVerificationCode(randomNum,phone);
+        let ret = {
+            uid: uid,
+            status: "true",
+            errCode: "0x10000"
+        }
+        res.header("Access-Control-Allow-Origin", "*");     //添加跨域标识.
+        res.send(ret);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+router.post('/invitationcode', async function(req, res) {
+    //1.获得req中的参数.
+    let uid = req.body.uid;
+    let phone = req.body.phone;
+    let usage = req.body.usage;
+
+    //2.检查参数有效性.
+
+    try {
+        //3.生成验证码并存储数据库.
+        let randomNum = stringRandom(6, '123456789'); //生成6位随机数字.
+        //4.存储电话和数字到数据库.
+        await modelOpts.updateSMS(phone, randomNum);
+        //5.调用短信接口发送短信.
+        await utils.sendVerificationCode(randomNum,phone,usage);
         let ret = {
             uid: uid,
             status: "true",
