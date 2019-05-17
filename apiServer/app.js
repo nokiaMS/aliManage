@@ -15,6 +15,7 @@ var userInfoRouter = require('./routes/userInfo');
 var userRouter = require('./routes/user');
 var smsRouter = require('./routes/verification');
 var assetRouter = require('./routes/asset');
+var fileRouter = require('./routes/fileOperations');
 
 var app = express();
 
@@ -34,6 +35,7 @@ app.use('/userInfo', userInfoRouter);
 app.use('/user', userRouter);
 app.use('/verification', smsRouter);
 app.use('/asset', assetRouter);
+app.use('/fileOperations', fileRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
