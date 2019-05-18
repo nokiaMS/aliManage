@@ -8,6 +8,7 @@ let systemSchema;
 let userInfo;
 let userModel;
 let smsModel;
+let cardModel;
 
 let db = mongoose.createConnection(DB_PATH, {
     useNewUrlParser: true
@@ -20,7 +21,68 @@ db.on('connected', (err) => {
     userInfo = require('./models/usersModel');
     userModel = require('./models/userModel');
     smsModel = require('./models/smsModel');
+    cardModel = require('./models/cardModel');
 });
+
+/* Add card information to db. */
+exports.saveCardSync = function (cardInst) {
+    return new Promise( function(resolve, reject) {
+        cardModel.model.create(cardInst, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "saveCardSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "saveCardSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Delete card information to db. */
+exports.deleteCardSync = function (cardId) {
+    return new Promise( function(resolve, reject) {
+        cardModel.model.remove({cardId:cardId}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "deleteCardSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "deleteCardSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Update card information to db. */
+exports.updateCardByIdSync = function (cardId, jsonStr) {
+    return new Promise( function(resolve, reject) {
+        cardModel.model.findOneAndUpdate({cardId: cardId},{$set: jsonStr}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "updateCardByIdSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "updateCardByIdSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Get card list by user name. */
+exports.getCardListByNameSync = async function (name) {
+    return new Promise( function(resolve, reject) {
+        cardModel.model.find({bindUser: name}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getCardListByNameSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getCardListByNameSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
 
 /* Save user information to db. */
 exports.saveUserSync = function (userInst) {
