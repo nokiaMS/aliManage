@@ -9,6 +9,7 @@ let userInfo;
 let userModel;
 let smsModel;
 let cardModel;
+let productModel;
 
 let db = mongoose.createConnection(DB_PATH, {
     useNewUrlParser: true
@@ -22,7 +23,38 @@ db.on('connected', (err) => {
     userModel = require('./models/userModel');
     smsModel = require('./models/smsModel');
     cardModel = require('./models/cardModel');
+    productModel = require('./models/product');
 });
+
+/* Get product information by product id. */
+exports.getProductInfoSync = async function (productId) {
+    return new Promise( function(resolve, reject) {
+        productModel.model.find({productId: productId}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getProductInfoSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getProductInfoSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Add product information to db. */
+exports.saveProductSync = function (productInst) {
+    return new Promise( function(resolve, reject) {
+        productModel.model.create(productInst, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "saveProductSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "saveProductSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
 
 /* Add card information to db. */
 exports.saveCardSync = function (cardInst) {
