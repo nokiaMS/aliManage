@@ -10,6 +10,7 @@ let userModel;
 let smsModel;
 let cardModel;
 let productModel;
+let publicationModel;
 
 let db = mongoose.createConnection(DB_PATH, {
     useNewUrlParser: true
@@ -24,7 +25,74 @@ db.on('connected', (err) => {
     smsModel = require('./models/smsModel');
     cardModel = require('./models/cardModel');
     productModel = require('./models/product');
+    publicationModel = require('./models/chainModel');
 });
+
+/* Add publication information to db. */
+exports.savePublicationSync = function (publicationInst) {
+    return new Promise( function(resolve, reject) {
+        publicationModel.model.create(publicationInst, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "savePublicationSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "savePublicationSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Get publication information by uid. */
+exports.getPublicationsByUidSync = async function (uid, page, count) {
+    return new Promise( function(resolve, reject) {
+        publicationModel.model.find({uid: uid}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getPublicationsByUserSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getPublicationsByUserSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Get publication information by status. */
+exports.getPublicationsByStatusSync = async function (status, page, count) {
+    return new Promise( function(resolve, reject) {
+        var skipCnt = page * count;
+        var limitCnt = count;
+        var filterJson = {skip: skipCnt, limit: limitCnt, sort:{'_id':-1}};
+        publicationModel.model.find({status: status}, null, filterJson, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getPublicationsByStatusSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getPublicationsByStatusSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Get product information by product id. */
+exports.getPublicationsByUserSync = async function (userName, page, count) {
+    return new Promise( function(resolve, reject) {
+        var skipCnt = page * count;
+        var limitCnt = count;
+        var filterJson = {skip: skipCnt, limit: limitCnt, sort:{'_id':-1}};
+        publicationModel.model.find({user: userName}, null, filterJson, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getPublicationsByUserSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getPublicationsByUserSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
 
 /* Get product information by product id. */
 exports.getProductInfoSync = async function (productId) {
