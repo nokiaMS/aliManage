@@ -11,6 +11,10 @@ let smsModel;
 let cardModel;
 let productModel;
 let publicationModel;
+let chatModel;
+let chatRelationModel;
+let chatMessageModel;
+let chatSignModel;
 
 let db = mongoose.createConnection(DB_PATH, {
     useNewUrlParser: true
@@ -26,7 +30,168 @@ db.on('connected', (err) => {
     cardModel = require('./models/cardModel');
     productModel = require('./models/product');
     publicationModel = require('./models/chainModel');
+    chatModel = require('./models/chat');
+    chatRelationModel = require('./models/chatRelation');
+    chatMessageModel = require('./models/chatMessage');
+    chatSignModel = require('./models/chatSign');
 });
+
+/* Update chat information to db. */
+exports.updateChatSignByIdSync = function (chatId, jsonStr) {
+    return new Promise( function(resolve, reject) {
+        chatSignModel.model.findOneAndUpdate({chatId: chatId},{$set: jsonStr}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "updateChatSignByIdSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "updateChatSignByIdSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* get chat sign notification from db. */
+exports.getChatSignNotificationSync = function (chatId, userName) {
+    return new Promise( function(resolve, reject) {
+        chatSignModel.model.find({chatId: chatId}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "chatSignModel" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "chatSignModel" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Add chat sign to db. */
+exports.saveChatSignInfoSync = function (signInst) {
+    return new Promise( function(resolve, reject) {
+        chatSignModel.model.create(signInst, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "saveChatSignInfoSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "saveChatSignInfoSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Add chat messages to db. */
+exports.saveChatMessageSync = function (chatMessage) {
+    return new Promise( function(resolve, reject) {
+        chatMessageModel.model.create(chatMessage, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "saveChatMessageSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "saveChatMessageSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* get chat messages from db. */
+exports.getChatMessagesSync = function (chatId, userName,from,to) {
+    return new Promise( function(resolve, reject) {
+        chatMessageModel.model.find({
+            $and:   [
+                        {chatId: chatId},
+                        {user: userName},
+                        {messageId: {"$gte": from}},
+                        {messageId: {"$lt": to}}
+                    ]
+        }, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getChatMessagesSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getChatMessagesSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Add chat relation to db. */
+exports.saveChatRelationSync = function (chatRelationInst) {
+    return new Promise( function(resolve, reject) {
+        chatRelationModel.model.create(chatRelationInst, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "saveChatRelationSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "saveChatRelationSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Add chat to db. */
+exports.saveChatSync = function (chatInst) {
+    return new Promise( function(resolve, reject) {
+        chatModel.model.create(chatInst, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "saveChatSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "saveChatSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* get chat information from db. */
+exports.getChatSync = function (chatId) {
+    return new Promise( function(resolve, reject) {
+        chatModel.model.find({chatId: chatId}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getChatSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getChatSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* get chat relation information from db. */
+exports.getChatRelationSync = function (user) {
+    return new Promise( function(resolve, reject) {
+        chatRelationModel.model.find({userName: user}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getChatRelationSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getChatRelationSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Update chat information to db. */
+exports.updateChatByIdSync = function (chatId, jsonStr) {
+    return new Promise( function(resolve, reject) {
+        chatModel.model.findOneAndUpdate({chatId: chatId},{$set: jsonStr}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "updateChatByIdSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "updateChatByIdSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
 
 /* Add publication information to db. */
 exports.savePublicationSync = function (publicationInst) {

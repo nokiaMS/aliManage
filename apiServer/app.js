@@ -19,6 +19,7 @@ var fileRouter = require('./routes/fileOperations');
 var cardRouter = require('./routes/card');
 var productRouter = require('./routes/product');
 var publicationRouter = require('./routes/publication');
+var chatRouter = require('./routes/chat');
 
 var app = express();
 
@@ -42,6 +43,7 @@ app.use('/fileOperations', fileRouter);
 app.use('/card', cardRouter);
 app.use('/product', productRouter);
 app.use('/chain', publicationRouter);
+app.use('/chat', chatRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
