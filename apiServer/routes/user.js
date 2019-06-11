@@ -410,6 +410,10 @@ router.post('/login',  async function (req, res) {
     }
 });
 
+router.get('/test', function (req, res) {
+    res.header("Access-Control-Allow-Origin", "*");     //添加跨域标识.
+    res.send("This is a test api");
+})
 /*
 * 用户注册api.
 * 测试用例:

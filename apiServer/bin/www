@@ -7,13 +7,15 @@
 var app = require('../app');
 var debug = require('debug')('apiserver:server');
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+//var port = normalizePort(process.env.PORT || '3000');
+//app.set('port', port);
 
 /**
  * Create HTTP server.
@@ -25,9 +27,18 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+//server.listen(port);
+server.listen(3000);
 server.on('error', onError);
 server.on('listening', onListening);
+
+const options = {
+    key: fs.readFileSync('../certFile/private.pem'),
+    cert: fs.readFileSync('../certFile/file.crt')
+}
+
+const httpsServ = https.createServer(options, app);
+httpsServ.listen(3001);
 
 /**
  * Normalize a port into a number, string, or false.
