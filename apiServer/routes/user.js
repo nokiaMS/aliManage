@@ -261,34 +261,8 @@ router.post('/info/base',  async function (req, res) {
 });
 
 /*
-guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST.0.1:3000/user/logout' --data '{"uid":"0x2244","nickName":"Jerraba"}'
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Content-Length: 52
-ETag: W/"34-Ph8ufcAUBa9/y6nj59cKcscmf+o"
-Date: Sat, 04 May 2019 10:20:47 GMT
-Connection: keep-alive
-
-{"uid":"0x2244","status":"true","errCode":"0x20014"}
-guoxu@ubuntu:~/gx/aliManage/apiServer$
-====================================================================================================
-
-guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST .0.1:3000/user/logout' --data '{"uid":"0x2244","nickName":"Jebbrraba"}'
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Content-Length: 53
-ETag: W/"35-B1CGuIbkTkKo7NJLruyWXlBvWIM"
-Date: Sat, 04 May 2019 10:21:52 GMT
-Connection: keep-alive
-
-{"uid":"0x2244","status":"false","errCode":"0x20015"}
-guoxu@ubuntu:~/gx/aliManage/apiServer$
-=======================================================================================================
-* */
+用户登出.
+ */
 router.post('/logout',  async function (req, res) {
     let logoutTime = Date.now();
 
@@ -306,7 +280,7 @@ router.post('/logout',  async function (req, res) {
             ret = {
                 uid: uid,
                 status: "false",
-                errCode: "0x20015"
+                errCode: "0x20013"
             }
         } else if(userInDB[0].status === "active") {    //用户已经登录
             await modelOpts.updateUserByNameSync(nickName, {logoutTime: logoutTime, status: "inactive"});
@@ -325,49 +299,8 @@ router.post('/logout',  async function (req, res) {
 });
 
 /*
-* 用户登录api.
-* 测试用例:
-guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/user/login' --data '{"uid":"0x2233","nickName":"Jerraba","password":"123456"}'
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Content-Length: 52
-ETag: W/"34-HQ7Jxf7DzFNrD7u6av7OK3+0T8c"
-Date: Sat, 04 May 2019 10:10:20 GMT
-Connection: keep-alive
-
-{"uid":"0x2233","status":"true","errCode":"0x20012"}
-guoxu@ubuntu:~/gx/aliManage/apiServer$
-
-=========================
-guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST .0.1:3000/user/login' --data '{"uid":"0x2233","nickName":"Jerraba","password":"123456"}'
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Content-Length: 53
-ETag: W/"35-EGpJ2URXqF4aFSKT65gwdtXSGR4"
-Date: Sat, 04 May 2019 10:12:05 GMT
-Connection: keep-alive
-
-{"uid":"0x2233","status":"false","errCode":"0x20011"}
-guoxu@ubuntu:~/gx/aliManage/apiServer$
-================================================================
-guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST.0.1:3000/user/login' --data '{"uid":"0x2233","nickName":"Jerbbbraba","password":"123456"}'
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Content-Length: 53
-ETag: W/"35-bnE0SXbJY1RrjNByYQiVLNEOQss"
-Date: Sat, 04 May 2019 10:13:07 GMT
-Connection: keep-alive
-
-{"uid":"0x2233","status":"false","errCode":"0x20013"}
-guoxu@ubuntu:~/gx/aliManage/apiServer$
-================================================================
-* */
+用户登录.
+ */
 router.post('/login',  async function (req, res) {
     let loginTime = Date.now();
 
@@ -394,6 +327,12 @@ router.post('/login',  async function (req, res) {
                 status: "false",
                 errCode: "0x20011"
             }
+        } else if(userInDB[0].password !== password) {  //密码不匹配
+            ret = {
+                uid: uid,
+                status: "false",
+                errCode: "0x20014"
+            }
         } else {    //登录成功,更新数据库状态,并返回登录成功给用户.
             await modelOpts.updateUserByNameSync(nickName, {loginTime: loginTime, status: "active"});
             ret = {
@@ -410,26 +349,17 @@ router.post('/login',  async function (req, res) {
     }
 });
 
+/**
+ * 测试服务器工作状态.
+ */
 router.get('/test', function (req, res) {
-    res.header("Access-Control-Allow-Origin", "*");     //添加跨域标识.
-    res.send("This is a test api");
+    res.header("Access-Control-Allow-Origin", "*"); //添加跨域标识.
+    res.send("This is a test api.");
 })
-/*
-* 用户注册api.
-* 测试用例:
-guoxu@ubuntu:~/gx/aliManage/apiServer$ curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/user/regist' --data '{"uid":"0x2222","nickName":"Jerraba","password":"123456","phone":"13499884758","code":"123456"}'
-HTTP/1.1 200 OK
-X-Powered-By: Express
-Access-Control-Allow-Origin: *
-Content-Type: application/json; charset=utf-8
-Content-Length: 111
-ETag: W/"6f-yLVSkhONpwBIloM1x4wwJ9hQViE"
-Date: Sat, 04 May 2019 08:53:32 GMT
-Connection: keep-alive
 
-{"uid":"0x2222","nickName":"Jerraba","phone":"13499884758","registTime":1556960012705,"loginStatus":"inactive"}
-guoxu@ubuntu:~/gx/aliManage/apiServer$
-* */
+/**
+ * 用户注册.
+ */
 router.post('/regist',  async function (req, res) {
     let registTime = Date.now();
 
@@ -442,6 +372,11 @@ router.post('/regist',  async function (req, res) {
 
     try {
         //2. 检查参数有效性,参数无效抛出异常.
+        //2.1 检查uid格式.
+        //2.2 检查电话号码格式.
+        //2.3 检查昵称长度及字符集.
+        //2.4 检查密码长度及字符集.
+        //2.5 检查code是否在数据库中及和电话号码是否对应,如果不在或不对应则验证失败.
 
         //3. 用户注册.
         let userInst = {
