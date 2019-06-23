@@ -88,7 +88,7 @@ func main() {
 
 	//发送auth.
 	//token := `{"mid":123, "room_id":"live://1000", "platform":"web", "accepts":[1000,1001,1002]}`
-	token := `{"room_id": "live://1000"}`
+	token := `{"room_id": "live://83973376"}`
 	d := makeProto(7, token)
 	//send auth info to server.
 	websocket.Message.Send(ws, d)

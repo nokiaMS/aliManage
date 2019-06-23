@@ -24,6 +24,10 @@ const chatSchema = mongoose.Schema({
     createTime: {
         type: Date
     },
+    maxCount: {
+        type: Number,
+        default:5
+    },
     latestMessageIndex: {
         type: Number,
         unique: true,

@@ -6,55 +6,15 @@ let utils = require('../utils/utils');
 let modelOpts = require('../db/modelOpts');
 let stringRandom = require('string-random');
 
-/*
-curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/chat/create' --data '{
-"uid": "0x5",
-"creator": "Jerraba",
-"roomName": "1111",
-"roomType": "public"
-}'
-
-返回结果:
-{
-  "uid": "0x5",
-  "status": true,
-  "errCode": "0x10000",
-  "result": {
-    "userList": [],
-    "chatType": "public",
-    "status": "active",
-    "_id": "5ce28ab4b5f9c75119fffce6",
-    "chatId": "87428592",
-    "chatName": "1111",
-    "creator": "Jerraba",
-    "createTime": "2019-05-20T11:08:36.802Z",
-    "__v": 0
-  }
-}
-
-返回值:
-{
-  "uid": "0x5",
-  "status": true,
-  "errCode": "0x10000",
-  "result": {
-    "userList": [],
-    "chatType": "public",
-    "status": "active",
-    "_id": "5ce28ab4b5f9c75119fffce6",
-    "chatId": "87428592",
-    "chatName": "1111",
-    "creator": "Jerraba",
-    "createTime": "2019-05-20T11:08:36.802Z",
-    "__v": 0
-  }
-}
-* */
+/**
+ * 创建聊天室.
+ */
 router.post('/create', async function(req, res) {
     //1.获得req中的参数.
     let uid = req.body.uid;
     let creator = req.body.creator;
     let roomName = req.body.roomName;
+    let maxCount = req.body.maxCount;
     let roomType = req.body.roomType;
     let ret;
 
@@ -68,6 +28,7 @@ router.post('/create', async function(req, res) {
             chatName: roomName,
             creator: creator,
             roomType: roomType,
+            maxCount: maxCount,
             createTime: Date.now()
         }
         let result = await modelOpts.saveChatSync(chatInst);
@@ -86,20 +47,9 @@ router.post('/create', async function(req, res) {
     }
 });
 
-/*
-curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/chat/join' --data '{
-"uid": "0x5",
-"user":"gx111",
-"code": "87428592"
-}'
-
-返回结果:
-{
-  "uid": "0x5",
-  "status": "true",
-  "errCode": "0x10000"
-}
-* */
+/**
+ * 加入聊天室.
+ */
 router.post('/join', async function(req, res) {
     //1.获得req中的参数.
     let uid = req.body.uid;
@@ -162,28 +112,9 @@ router.post('/join', async function(req, res) {
     }
 });
 
-/*
-curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/chat/detail' --data '{
-"uid": "0x5",
-"code": "87428592"
-}'
-
-返回结果:
-{
-  "uid": "0x5",
-  "chatInfo": [{
-    "userList": ["gx", "gx111"],
-    "chatType": "public",
-    "status": "active",
-    "_id": "5ce28ab4b5f9c75119fffce6",
-    "chatId": "87428592",
-    "chatName": "1111",
-    "creator": "Jerraba",
-    "createTime": "2019-05-20T11:08:36.802Z",
-    "__v": 0
-  }]
-}
-* */
+/**
+ * 获取聊天室基本信息.
+ */
 router.post('/detail', async function(req, res) {
     //1.获得req中的参数.
     let uid = req.body.uid;
@@ -213,22 +144,9 @@ router.post('/detail', async function(req, res) {
     }
 });
 
-/*
-curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/chat/list' --data '{
-"uid": "0x5",
-"user": "liulin222"
-}'
-返回结果:
-{
-  "uid": "0x5",
-  "chatRooms": [{
-    "_id": "5ce37273dffe945d63c26c30",
-    "userName": "liulin222",
-    "chatId": "87428592",
-    "__v": 0
-  }]
-}
-* */
+/**
+ * 获取聊天室列表.
+ */
 router.post('/list', async function(req, res) {
     //1.获得req中的参数.
     let uid = req.body.uid;
