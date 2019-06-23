@@ -1,6 +1,6 @@
 #!/bin/bash
 logFile='/tmp/apiServerChecker.log'
-programFolder='/home/guoxu/gx/aliManage/apiServer/bin/'
+programFolder='/home/gl/aliManage/apiServer/bin/'
 program='./www'
 
 result=`ps axf | grep -w 'www' | grep -v grep`
