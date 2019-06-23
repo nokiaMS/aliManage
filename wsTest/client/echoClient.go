@@ -20,6 +20,11 @@ const (
 	MaxBodySize = int32(1 << 12)
 )
 
+const HEADER_LEN = 16
+const BODYLENGTH_LEN = 4
+const ROOMID_LEN = 4
+const INT32_LEN = 4
+
 const (
 	// size
 	_packSize      = 4
@@ -82,7 +87,8 @@ func main() {
 	var msgCount int = 0
 
 	//发送auth.
-	token := `{"mid":123, "room_id":"live://1000", "platform":"web", "accepts":[1000,1001,1002]}`
+	//token := `{"mid":123, "room_id":"live://1000", "platform":"web", "accepts":[1000,1001,1002]}`
+	token := `{"room_id": "live://1000"}`
 	d := makeProto(7, token)
 	//send auth info to server.
 	websocket.Message.Send(ws, d)
@@ -93,33 +99,114 @@ func main() {
 
 	//监听响应消息.
 	for {
-		var msg [512]byte
-		_, err := ws.Read(msg[:])//此处阻塞，等待有数据可读
+		var header [HEADER_LEN]byte
+		_, err := ws.Read(header[:])//此处阻塞，等待有数据可读
 		if err != nil {
 			fmt.Println("read:", err)
 			return
 		}
+		//encodedStr := hex.EncodeToString(header[:])
+		//fmt.Println("msg buffer:",encodedStr)
 
 		//packet length.
 		var packetLen int32
-		packetLenBuf := bytes.NewBuffer(msg[_packOffset:_headerOffset])
+		packetLenBuf := bytes.NewBuffer(header[_packOffset:_headerOffset])
 		binary.Read(packetLenBuf, binary.BigEndian, &packetLen)
 		//header length.
 		var headerLen int16
-		headerLenBuf := bytes.NewBuffer(msg[_headerOffset:_verOffset])
+		headerLenBuf := bytes.NewBuffer(header[_headerOffset:_verOffset])
 		binary.Read(headerLenBuf, binary.BigEndian, &headerLen);
 		//version.
 		var ver int16
-		versionBuf := bytes.NewBuffer(msg[_verOffset:_opOffset])
+		versionBuf := bytes.NewBuffer(header[_verOffset:_opOffset])
 		binary.Read(versionBuf, binary.BigEndian, &ver)
 		//op code.
 		var opCode int32
-		opCodeBuf := bytes.NewBuffer(msg[_opOffset:_seqOffset])
+		opCodeBuf := bytes.NewBuffer(header[_opOffset:_seqOffset])
 		binary.Read(opCodeBuf, binary.BigEndian, &opCode)
 		//sequence.
 		var seq int32
-		seqBuf := bytes.NewBuffer(msg[_seqOffset:_seqOffset+_seqSize])
+		seqBuf := bytes.NewBuffer(header[_seqOffset:_seqOffset+_seqSize])
 		binary.Read(seqBuf, binary.BigEndian, &seq)
+
+		fmt.Println(msgCount,"Packet length:", packetLen, "Header length:", headerLen, "Version:", ver,
+			"opcode:", opCode, "seq:", seq)
+
+		if(opCode == 9) {
+			//get body Length.
+			var bodyLength [BODYLENGTH_LEN]byte
+			var bodyLen int32
+			_, err = ws.Read(bodyLength[:]) //此处阻塞，等待有数据可读
+			if err != nil {
+				fmt.Println("read:", err)
+				return
+			}
+			bodyLenBuf := bytes.NewBuffer(bodyLength[:]) //把数组转变为切片.
+			binary.Read(bodyLenBuf, binary.BigEndian, &bodyLen)
+			bodyLen -= ROOMID_LEN + INT32_LEN + BODYLENGTH_LEN
+			fmt.Println("Body length:", bodyLen)
+
+			//get one int32 field.
+			var int32Buf [INT32_LEN]byte
+			var int32Field int32
+			_, err = ws.Read(int32Buf[:]) //此处阻塞，等待有数据可读
+			if err != nil {
+				fmt.Println("read:", err)
+				return
+			}
+			int32Buffer := bytes.NewBuffer(int32Buf[:]) //把数组转变为切片.
+			binary.Read(int32Buffer, binary.BigEndian, &int32Field)
+			fmt.Println("int32 field id:", int32Field)
+
+			//get room id.
+			var roomidBuf [ROOMID_LEN]byte
+			var roomid int32
+			_, err = ws.Read(roomidBuf[:]) //此处阻塞，等待有数据可读
+			if err != nil {
+				fmt.Println("read:", err)
+				return
+			}
+			roomidBuffer := bytes.NewBuffer(roomidBuf[:]) //把数组转变为切片.
+			binary.Read(roomidBuffer, binary.BigEndian, &roomid)
+			fmt.Println("room id:", roomid)
+
+			{
+				//get one int32 field.
+				var int32Buf [INT32_LEN]byte
+				var int32Field int32
+				_, err = ws.Read(int32Buf[:]) //此处阻塞，等待有数据可读
+				if err != nil {
+					fmt.Println("read:", err)
+					return
+				}
+				int32Buffer := bytes.NewBuffer(int32Buf[:]) //把数组转变为切片.
+				binary.Read(int32Buffer, binary.BigEndian, &int32Field)
+				fmt.Println("int32 field id:", int32Field)
+			}
+
+			//get body.
+			var body [1024]byte
+			_, err = ws.Read(body[:bodyLen]) //读取body,此处阻塞，等待有数据可读
+			if err != nil {
+				fmt.Println("read:", err)
+				return
+			}
+			bodyStr := string(body[:bodyLen-INT32_LEN])
+			fmt.Println("body:", bodyStr)
+		} else if(opCode == 3) {
+			//get body Length.
+			var bodyLength [BODYLENGTH_LEN]byte
+			var bodyLen int32
+			_, err = ws.Read(bodyLength[:]) //此处阻塞，等待有数据可读
+			if err != nil {
+				fmt.Println("read:", err)
+				return
+			}
+			bodyLenBuf := bytes.NewBuffer(bodyLength[:]) //把数组转变为切片.
+			binary.Read(bodyLenBuf, binary.BigEndian, &bodyLen)
+			fmt.Println("Body length:", bodyLen)
+		}
+		/*
 		//body	body究竟是怎么计算的?到现在还不是很清楚,需要再仔细研究.
 		var bodyStr string
 		if(opCode == 9) {
@@ -134,9 +221,8 @@ func main() {
 			body := msg[bodyStart: bodyEnd]
 			bodyStr = string(body)
 		}
+		*/
 
-		fmt.Println(msgCount,"Packet length:", packetLen, "Header length:", headerLen, "Version:", ver,
-					"opcode:", opCode, "seq:", seq, "body:", bodyStr)
 	}
 
 	/*

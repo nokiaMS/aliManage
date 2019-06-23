@@ -33,8 +33,8 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 const options = {
-    key: fs.readFileSync('../certFile/private.pem'),
-    cert: fs.readFileSync('../certFile/file.crt')
+    key: fs.readFileSync('../certFile/2388187_gxwlp.cn.key'),
+    cert: fs.readFileSync('../certFile/2388187_gxwlp.cn.pem')
 }
 
 const httpsServ = https.createServer(options, app);
