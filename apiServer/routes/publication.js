@@ -62,14 +62,9 @@ router.post('/result', async function(req, res) {
     }
 });
 
-/*
-curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/chain/single' --data '{
-"uid": "0x3344",
-"user": "Jerraba",
-"infoType": "char",
-"info": "这是一个美好的夜晚."
-}'
-* */
+/**
+ * 发布publication信息.
+ */
 router.post('/single', async function(req, res) {
     //1.获得req中的参数.
     let uid = req.body.uid;
@@ -104,28 +99,9 @@ router.post('/single', async function(req, res) {
     }
 });
 
-/*
-curl -X POST -H 'Content-Type: application/json' -i 'http://127.0.0.1:3000/chain/single/status' --data '{
-"uid": "0x5"
-}'
-
-返回结果:
-{
-  "uid": "0x5",
-  "status": "true",
-  "publications": [{
-    "infoType": "char",
-    "_id": "5ce274c94f085049b3467e0c",
-    "uid": "0x5",
-    "user": "aaa",
-    "info": "太阳当空照",
-    "status": "waitingOnChain",
-    "createTime": "2019-05-20T09:35:05.895Z",
-    "onchainTime": "2019-05-20T09:35:05.895Z",
-    "__v": 0
-  }]
-}
-* */
+/**
+ * 获得publication信息状态.
+ */
 router.post('/single/status', async function(req, res) {
     //1.获得req中的参数.
     let uid = req.body.uid;
@@ -186,11 +162,57 @@ router.post('/squre', async function(req, res) {
     let ret;
 
     try {
+        let result = await modelOpts.getPublicationsByStatusSync("onChain",parseInt(page), parseInt(count));
+        ret = {
+            uid: uid,
+            status: "true",
+            publications: result
+        }
+        res.header("Access-Control-Allow-Origin", "*");     //添加跨域标识.
+        res.send(ret);
+    } catch(e) {
+        console.log("Error happened,");
+        console.log(e);
+    }
+});
+
+router.post('/waiting', async function(req, res) {
+    //1.获得req中的参数.
+    let uid = req.body.uid;
+    let page = req.body.page;
+    let count = req.body.count;
+    let ret;
+
+    try {
         let result = await modelOpts.getPublicationsByStatusSync("waitingOnChain",parseInt(page), parseInt(count));
         ret = {
             uid: uid,
             status: "true",
             publications: result
+        }
+        res.header("Access-Control-Allow-Origin", "*");     //添加跨域标识.
+        res.send(ret);
+    } catch(e) {
+        console.log("Error happened,");
+        console.log(e);
+    }
+});
+
+/**
+ * 更新产品信息.
+ */
+router.post('/onchain', async function(req, res) {
+    //1.获得req中的参数.
+    let uid = req.body.uid;
+    let ret;
+
+    try {
+        //2. 检查参数有效性,参数无效抛出异常.
+        let result = await modelOpts.updatePublicationByIdSync(uid,{status: 'onChain'});
+        ret = {
+            uid: uid,
+            status: true,
+            publicationInfo: result
         }
         res.header("Access-Control-Allow-Origin", "*");     //添加跨域标识.
         res.send(ret);

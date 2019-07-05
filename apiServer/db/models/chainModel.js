@@ -7,7 +7,8 @@ const chainSchema = mongoose.Schema({
         type: String
     },
     tranHash: {
-        type: String
+        type: String,
+        default: ''
     },
     uid: {
         type: String,

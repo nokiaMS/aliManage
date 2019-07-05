@@ -322,6 +322,21 @@ exports.updateProductByIdSync = function (productId, jsonStr) {
     });
 };
 
+/* Update publication information to db. */
+exports.updatePublicationByIdSync = function (publicationId, jsonStr) {
+    return new Promise( function(resolve, reject) {
+        publicationModel.model.findOneAndUpdate({uid: publicationId, status: 'waitingOnChain'},{$set: jsonStr}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "updatePublicationByIdSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "updatePublicationByIdSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
 /* Add card information to db. */
 exports.saveCardSync = function (cardInst) {
     return new Promise( function(resolve, reject) {
