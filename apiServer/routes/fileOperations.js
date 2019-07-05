@@ -65,4 +65,13 @@ router.post('/download', function (req, res) {
         res.download(fileStr)
 });
 
+/**
+ * Get 方式下载文件.
+ */
+router.get('/download', function (req, res) {
+    let fileId = req.query.id
+    let fileStr = "./upload/" + fileId
+    res.download(fileStr)
+})
+
 module.exports = router;

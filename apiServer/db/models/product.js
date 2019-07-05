@@ -7,72 +7,25 @@ const productSchema = mongoose.Schema({
         type: String,
         unique: true
     },
-    manufactTime: {
-        type: String
+    charInfos: {
+        type: [{
+            status: String,
+            publisher: String,
+            date: {type: Date, default: Date.now},
+            content: String
+        }]
     },
-    charInfo1: {
-        type: String
-    },
-    charInfo2: {
-        type: String
-    },
-    charInfo3: {
-        type: String
-    },
-    charInfo4: {
-        type: String
-    },
-    charInfo5: {
-        type: String
-    },
-    charInfo6: {
-        type: String
-    },
-    charInfo7: {
-        type: String
-    },
-    charInfo8: {
-        type: String
-    },
-    charInfo9: {
-        type: String
-    },
-    charInfo0: {
-        type: String
-    },
-    imgInfo1: {
-        type: String
-    },
-    imgInfo2: {
-        type: String
-    },
-    imgInfo3: {
-        type: String
-    },
-    imgInfo4: {
-        type: String
-    },
-    imgInfo5: {
-        type: String
-    },
-    imgInfo6: {
-        type: String
-    },
-    imgInfo7: {
-        type: String
-    },
-    imgInfo8: {
-        type: String
-    },
-    imgInfo9: {
-        type: String
-    },
-    imgInfo0: {
-        type: String
+    imgInfos: {
+        type: [{
+            status: String,
+            publisher: String,
+            date: {type: Date, default: Date.now},
+            content: String
+        }]
     },
     status: {
         type: String,
-        default: "valid"
+        default: "waitingOnChain"
     }
 });
 

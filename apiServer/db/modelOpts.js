@@ -289,6 +289,39 @@ exports.saveProductSync = function (productInst) {
     });
 };
 
+/* Get product waiting on chain information. */
+exports.getWaitingOnChainProductSync = async function (page, count) {
+    return new Promise( function(resolve, reject) {
+        var skipCnt = page * count;
+        var limitCnt = count;
+        var filterJson = {skip: skipCnt, limit: limitCnt};
+        productModel.model.find({status: 'waitingOnChain'}, null, filterJson, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "getOneWaitingOnChainProductSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "getOneWaitingOnChainProductSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
+/* Update product information to db. */
+exports.updateProductByIdSync = function (productId, jsonStr) {
+    return new Promise( function(resolve, reject) {
+        productModel.model.findOneAndUpdate({productId: productId},{$set: jsonStr}, function (err, result) {
+            if(!err) {
+                console.log(LOG_PREFIX + "updateProductByIdSync" + result);
+                resolve(result);
+            } else {
+                console.log(LOG_PREFIX + "updateProductByIdSync" + err);
+                reject(err);
+            }
+        });
+    });
+};
+
 /* Add card information to db. */
 exports.saveCardSync = function (cardInst) {
     return new Promise( function(resolve, reject) {
